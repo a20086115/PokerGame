@@ -7,12 +7,17 @@
         <meta name="description" content="hichat | a simple chat application built with node.js and websocket">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>QQQQ</title>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.7/dist/vue.js"></script>
         <link rel="stylesheet" href="styles/main.css">
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
         <link rel="icon" href="favicon.ico" type="image/x-icon">
     </head>
     <body>
-        <div class="wrapper">
+        <div id="app">
+{{test}}
+<button-counter></button-counter>
+        </div>
+        <!-- <div class="wrapper">
             <div class="banner">
                 <h1>QQQQ</h1>
                 <span id="status"></span>
@@ -41,8 +46,26 @@
                 <input type="text" placeHolder="nickname" id="nicknameInput" />
                 <input type="button" value="OK" id="loginBtn" />
             </div>
-        </div>
+        </div> -->
         <script src="/socket.io/socket.io.js"></script>
         <script src="scripts/qq.js"></script>
+        <script>
+
+            // 定义一个名为 button-counter 的新组件
+            Vue.component('button-counter', {
+            data: function () {
+                return {
+                count: 0
+                }
+            },
+            template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+            })
+            new Vue({
+                el: "#app",
+                data:{
+                    test: 3
+                }
+            })
+        </script>
     </body>
-</html>
+</html> 

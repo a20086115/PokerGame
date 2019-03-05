@@ -2,7 +2,8 @@ window.onload = function() {
     //实例并初始化我们的hichat程序
     var qq = new QQ();
     qq.init();
-    
+	
+	
     
     
 };
@@ -49,7 +50,12 @@ QQ.prototype = {
 		this.socket.on('newMsg', function(user, msg, color) {
 		    that._displayNewMsg(user, msg, color);
 		});
-		
+
+
+		// 收到发牌
+		this.socket.on("newPoker", (user, pokersArray, value => {
+			that._displayPoker(user, pokersArray, value);
+		}))
 		
 		
 		//昵称提交按钮
@@ -155,6 +161,9 @@ QQ.prototype = {
 		})
 		
    },
+   _displayPoker: (user, pokersArray, value) =>{
+
+	},
    _displayNewMsg: function(user, msg, color) {
         var container = document.getElementById('historyMsg'),
             msgToDisplay = document.createElement('p'),
@@ -165,7 +174,8 @@ QQ.prototype = {
         msgToDisplay.innerHTML = user + '<span class="timespan">(' + date + '): </span>' + msg;
         container.appendChild(msgToDisplay);
         container.scrollTop = container.scrollHeight;
-    },
+	},
+
     _displayImage: function(user, imgData, color) {
     	var container = document.getElementById("historyMsg"),
     		msgToDisplay = document.createElement('p');

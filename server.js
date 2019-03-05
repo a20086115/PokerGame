@@ -15,9 +15,36 @@ var express = require('express'),
     app = express(),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server); //引入socket.io模块并绑定到服务器
-    var users = [];
+    
 app.use('/', express.static(__dirname + '/www'));
 server.listen(80);
+Array.prototype.shuffle = function() {
+    var array = this;
+    var m = array.length,
+        t, i;
+    while (m) {
+        i = Math.floor(Math.random() * m--);
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+    }
+    return array;
+}
+const siglePokes = ["A","2","3","4","5","6","7","8","9","10","J","Q","K",];
+const pokes = [1,2,3,4,5,6,7,8,9,10,11,12,13,1,2,3,4,5,6,7,8,9,10,11,12,13,1,2,3,4,5,6,7,8,9,10,11,12,13,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+// pokes.shuffle()
+var usersPokes = getUserPokes(3,4)
+
+// 创建用户数组
+var users = [];
+var user = {
+    name: "nickname",
+    userIndex: 5,
+    pokes:[]
+}
+
+
+
 
 //socket部分
 io.on('connection', function(socket) {
@@ -59,6 +86,56 @@ io.on('connection', function(socket) {
     socket.on('img', function(imgData) {
     //通过一个newImg事件分发到除自己外的每个用户
 	    socket.broadcast.emit('newImg', socket.nickname, imgData);
-	});
+    });
+    
+
+    //打牌
+	socket.on('postPoker', function(pokersArray, value) {
+        // msg = [1,1,3]
+        // value = 5;
+        //将消息发送到除自己外的所有用户
+        socket.broadcast.emit('newPoker', socket.nickname, pokersArray, value);
+    });
+
+    // 监听开始游戏按钮
+
+    socket.on('start', (pokesNum, personsNum) => {
+        if(personsNum != users.length){
+            socket.broadcast.emit('error',"人数与当前连接人数不符合！");
+        }
+
+        
+        socket.broadcast.emit
+    })
 });
+
 console.log('server started on 80');
+
+
+/**
+* @author: YWQ
+* @date: 2019-03-05
+* @params:  useNUm: 人数， pokesNum: 扑克牌数量
+* @return:  返回数组userPokers[]
+* @description:  按照人数和扑克牌数量，将扑克牌平均分配。
+*/
+function getUserPokes(useNum, pokesNum){
+    var userPokes = [];
+    var totalPokes = [];
+
+    // 获取总的扑克牌
+    while(pokesNum){
+        pokesNum--;
+        totalPokes = totalPokes.concat(pokes);
+    }
+    totalPokes.shuffle() 
+    // 遍历扑克牌
+    totalPokes.forEach(function (val,index){
+        if(userPokes[(index % useNum)]){
+            userPokes[(index % useNum)].push(val)
+        }else{
+            userPokes[(index % useNum)] = [val]
+        }
+    })
+    return userPokes
+}
