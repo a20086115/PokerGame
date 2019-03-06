@@ -14,10 +14,10 @@
     </head>
     <body>
         <div id="app">
-{{test}}
-<button-counter></button-counter>
+                <button-counter></button-counter>
+                <button @click="startGame">kaishi</button>
         </div>
-        <!-- <div class="wrapper">
+        <div class="wrapper">
             <div class="banner">
                 <h1>QQQQ</h1>
                 <span id="status"></span>
@@ -46,7 +46,7 @@
                 <input type="text" placeHolder="nickname" id="nicknameInput" />
                 <input type="button" value="OK" id="loginBtn" />
             </div>
-        </div> -->
+        </div>
         <script src="/socket.io/socket.io.js"></script>
         <script src="scripts/qq.js"></script>
         <script>
@@ -55,15 +55,57 @@
             Vue.component('button-counter', {
             data: function () {
                 return {
-                count: 0
+                     count: 0
                 }
             },
             template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
             })
-            new Vue({
+
+
+            var vue = new Vue({
                 el: "#app",
                 data:{
-                    test: 3
+                    socket: null
+                },
+                created: function(){
+                    // this.client = new Client();
+                    this.socket = io.connect();
+                    //监听socket的connect事件，此事件表示连接已经建立
+                    this.socket.on('connect', function() {
+                        //连接到服务"器后，显示昵称输入框
+                        console.log("client: connected server ");
+                        // document.getElementById('info').textContent = 'get yourself a nickname :)';
+                        // document.getElementById('nickWrapper').style.display = 'block';
+                        // document.getElementById('nicknameInput').focus();
+                    });
+                    this.socket.emit('login', "nickName");
+                    this.socket.on('newg', function(a) {
+                        //连接到服务"器后，显示昵称输入框
+                        console.log(a);
+                        // document.getElementById('info').textContent = 'get yourself a nickname :)';
+                        // document.getElementById('nickWrapper').style.display = 'block';
+                        // document.getElementById('nicknameInput').focus();
+                    }); 
+                    this.socket.on('newGame', function(a) {
+                        //连接到服务"器后，显示昵称输入框
+                        console.log(a);
+                        // document.getElementById('info').textContent = 'get yourself a nickname :)';
+                        // document.getElementById('nickWrapper').style.display = 'block';
+                        // document.getElementById('nicknameInput').focus();
+                    });
+
+                    		//收到新消息
+                    this.socket.on('newMsg', function(user, msg, color) {
+                        console.log("newMsg")
+                    });
+                    // this.client.init();
+                },
+                methods: {
+                    startGame: function(){
+                        console.log("startGame")
+                        // this.socket.emit('newGame', 2, 2); 
+                        this.socket.emit('postMsg', "msg","#000"); //把消息发送到服务器
+                    }
                 }
             })
         </script>

@@ -37,6 +37,8 @@ var usersPokes = getUserPokes(3,4)
 
 // 创建用户数组
 var users = [];
+
+
 var user = {
     name: "nickname",
     userIndex: 5,
@@ -79,6 +81,7 @@ io.on('connection', function(socket) {
 	//消息
 	socket.on('postMsg', function(msg, color) {
         //将消息发送到除自己外的所有用户
+        console.log("postMsg")
         socket.broadcast.emit('newMsg', socket.nickname, msg, color);
     });
     
@@ -98,14 +101,17 @@ io.on('connection', function(socket) {
     });
 
     // 监听开始游戏按钮
-
-    socket.on('start', (pokesNum, personsNum) => {
-        if(personsNum != users.length){
-            socket.broadcast.emit('error',"人数与当前连接人数不符合！");
+    socket.on('newGame', (pokesNum, personsNum) => {
+        console.log(users.length)
+        // if(personsNum != users.length){
+        //     socket.broadcast.emit('error',"人数与当前连接人数不符合！");
+        // }
+        // 获取每个人的poke牌
+        let userPokesArr = getUserPokes(personsNum, pokesNum);
+        for(let i = 0; i < users.length; i++){
+            users[i].pokes = userPokesArr[i];
         }
-
-        
-        socket.broadcast.emit
+        socket.broadcast.emit("newg","s", users)
     })
 });
 
@@ -122,7 +128,6 @@ console.log('server started on 80');
 function getUserPokes(useNum, pokesNum){
     var userPokes = [];
     var totalPokes = [];
-
     // 获取总的扑克牌
     while(pokesNum){
         pokesNum--;
@@ -138,4 +143,26 @@ function getUserPokes(useNum, pokesNum){
         }
     })
     return userPokes
+}
+
+/**
+* @author: YWQ
+* @date: 2019-03-06
+* @params: 牌数组
+* @return: 排序后的数组
+* @description: 使用插入排序，对扑克牌进行排序
+*/
+function insertionSort(arr) {
+    var len = arr.length;
+    var preIndex, current;
+    for (var i = 1; i < len; i++) {
+        preIndex = i - 1;
+        current = arr[i];
+        while(preIndex >= 0 && arr[preIndex] < current) {
+            arr[preIndex+1] = arr[preIndex];
+            preIndex--;
+        }
+        arr[preIndex+1] = current;
+    }
+    return arr;
 }

@@ -1,20 +1,21 @@
 window.onload = function() {
     //实例并初始化我们的hichat程序
-    var qq = new QQ();
-    qq.init();
+    var client = new Client();
+    client.init();
 	
 	
     
     
 };
 
-//定义我们的QQ类
-var QQ = function() {
-    this.socket = null;
+//定义我们的Client类
+var Client = function() {
+	this.socket = null;
+	this.user = null;
 };
 
 //向原型添加业务方法
-QQ.prototype = {
+Client.prototype = {
     init: function() {//此方法初始化程序
         var that = this;
         console.log(that);
@@ -31,7 +32,7 @@ QQ.prototype = {
         });
 	 	//登陆成功
 	 	this.socket.on('loginSuccess', function() {
-		    document.title = 'QQ | ' + document.getElementById('nicknameInput').value;
+		    document.title = 'Client | ' + document.getElementById('nicknameInput').value;
 		    document.getElementById('loginWrapper').style.display = 'none';//隐藏遮罩层显聊天界面
 		    document.getElementById('messageInput').focus();//让消息输入框获得焦点
 		});
@@ -53,9 +54,18 @@ QQ.prototype = {
 
 
 		// 收到发牌
-		this.socket.on("newPoker", (user, pokersArray, value => {
+		this.socket.on("newPoker", (user, pokersArray, value) => {
 			that._displayPoker(user, pokersArray, value);
-		}))
+		})
+
+		// 服务端开始游戏users
+		this.socket.on("newGame", users => {
+			for(let user of users){
+				if(user.name == this.name){
+
+				}
+			}
+		})
 		
 		
 		//昵称提交按钮
@@ -160,6 +170,9 @@ QQ.prototype = {
 			container.innerHTML = "";
 		})
 		
+   },
+   _startGame: function(){
+
    },
    _displayPoker: (user, pokersArray, value) =>{
 
